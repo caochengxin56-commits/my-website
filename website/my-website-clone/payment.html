@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>支付页面 | 慈愈计划</title>
+    <style>
+      :root {
+        --bg: #f5ecde;
+        --paper: rgba(255, 248, 239, 0.92);
+        --text: #26190f;
+        --muted: #715845;
+        --green: #0f5b45;
+        --gold: #d29b3c;
+        --line: rgba(85, 59, 37, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 20px 16px;
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+          "Source Han Sans SC", sans-serif;
+        background:
+          radial-gradient(circle at top right, rgba(210, 155, 60, 0.24), transparent 30%),
+          radial-gradient(circle at bottom left, rgba(15, 91, 69, 0.12), transparent 28%),
+          linear-gradient(180deg, #f8efdf, #ecd6b8);
+        color: var(--text);
+      }
+
+      .payment-shell {
+        width: min(100%, 420px);
+        padding: 26px 20px;
+        border-radius: 30px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 42px rgba(55, 32, 14, 0.14);
+      }
+
+      .pill {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(15, 91, 69, 0.08);
+        color: var(--green);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      h1 {
+        margin: 14px 0 10px;
+        font-size: 2rem;
+        line-height: 1.28;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.9;
+      }
+
+      .project-box {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 22px;
+        background: #fffaf2;
+        border: 1px solid var(--line);
+      }
+
+      .project-box strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--green);
+      }
+
+      .project-box + .project-box {
+        margin-top: 12px;
+      }
+
+      .actions {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .footer-nav {
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .footer-logo {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 6px;
+        object-fit: contain;
+        grid-column: 1 / -1;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        border-radius: 18px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #efc470, var(--gold));
+        color: #27170d;
+      }
+
+      .btn-secondary {
+        background: rgba(15, 91, 69, 0.08);
+        color: var(--green);
+      }
+
+      .btn-outline {
+        background: rgba(255, 250, 242, 0.72);
+        border: 1px solid var(--line);
+        color: var(--green);
+      }
+
+      .footer-nav .btn:last-child:nth-child(even) {
+        grid-column: 1 / -1;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="payment-shell">
+      <span class="pill">支付流程占位页</span>
+      <h1>这个页面已预留，稍后可接入真实支付</h1>
+      <p>
+        当前版本用于演示从不同募捐项目详情页跳转到支付页面的流程。后续可以在这里
+        接第三方支付、收款表单，或正式的慈善募捐支付网关。
+      </p>
+
+      <div class="project-box">
+        <strong>当前选中的募捐项目</strong>
+        <p id="projectName">正在读取项目名称...</p>
+      </div>
+
+      <div class="project-box">
+        <strong>当前选择的捐助金额</strong>
+        <p id="donationAmount">尚未选择固定金额，后续可在这里显示自定义输入。</p>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-primary" id="backToProject" href="./project.html">返回项目详情页</a>
+        <a class="btn btn-secondary" href="./index.html">返回首页</a>
+      </div>
+
+      <div class="footer-nav">
+        <img class="footer-logo" src="./慈善募捐网站logo设计.png" alt="AidSpring Foundation logo" />
+        <a class="btn btn-outline" href="./index.html#patientDirectory">立即捐助</a>
+        <a class="btn btn-outline" href="./news.html">新闻媒体</a>
+        <a class="btn btn-outline" href="./about.html">关于我们</a>
+        <a class="btn btn-outline" href="./contact.html">联系我们</a>
+        <a class="btn btn-outline" href="./privacy.html">隐私条款</a>
+      </div>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const name = params.get("project");
+      const amount = params.get("amount");
+      const slug = params.get("slug");
+      const target = document.getElementById("projectName");
+      const donationAmount = document.getElementById("donationAmount");
+      const backToProject = document.getElementById("backToProject");
+
+      if (name) {
+        target.textContent = name;
+      } else {
+        target.textContent = "当前没有传入具体项目。";
+      }
+
+      if (amount) {
+        donationAmount.textContent = `US$${Number(amount).toLocaleString("zh-CN")}`;
+      }
+
+      if (slug && backToProject) {
+        backToProject.href = `./project.html?slug=${encodeURIComponent(slug)}`;
+      }
+    </script>
+  </body>
+</html>

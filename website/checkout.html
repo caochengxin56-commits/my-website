@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>选择支付方式 | AidSpring Foundation</title>
+    <meta
+      name="description"
+      content="AidSpring Foundation 支付方式页面，支持 Apple Pay、银行卡、Visa 与 Google Pay。"
+    />
+    <style>
+      :root {
+        --bg: #f5ecde;
+        --panel: rgba(255, 248, 239, 0.97);
+        --panel-soft: #fff9f1;
+        --text: #26190f;
+        --muted: #6f5a47;
+        --green: #0f5b45;
+        --green-deep: #08382b;
+        --gold: #d9ab55;
+        --gold-strong: #c99231;
+        --line: rgba(85, 59, 37, 0.12);
+        --shadow: 0 18px 46px rgba(48, 25, 10, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 18px 14px 28px;
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+          "Source Han Sans SC", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top right, rgba(217, 171, 85, 0.28), transparent 32%),
+          radial-gradient(circle at bottom left, rgba(15, 91, 69, 0.12), transparent 28%),
+          linear-gradient(180deg, #f7eddc 0%, #f3e6d2 45%, #e8d0b4 100%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page-shell {
+        width: min(100%, 430px);
+        margin: 0 auto;
+      }
+
+      .page-glow {
+        position: fixed;
+        width: 16rem;
+        height: 16rem;
+        border-radius: 50%;
+        filter: blur(32px);
+        opacity: 0.45;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .page-glow-top {
+        top: -4rem;
+        left: -5rem;
+        background: rgba(255, 215, 153, 0.8);
+      }
+
+      .page-glow-bottom {
+        right: -5rem;
+        bottom: 4rem;
+        background: rgba(15, 91, 69, 0.18);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+        padding: 6px;
+        border-radius: 14px;
+        background: linear-gradient(145deg, var(--green) 0%, var(--green-deep) 100%);
+      }
+
+      .brand-mark img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.2;
+        color: var(--green);
+      }
+
+      .topbar-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        min-height: 40px;
+        padding: 0 12px;
+        border-radius: 14px;
+        background: rgba(255, 248, 239, 0.82);
+        border: 1px solid rgba(85, 59, 37, 0.08);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--green);
+      }
+
+      .payment-card {
+        padding: 18px 16px 16px;
+        border-radius: 26px;
+        background: var(--panel);
+        border: 1px solid rgba(85, 59, 37, 0.1);
+        box-shadow: var(--shadow);
+      }
+
+      .payment-kicker {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: rgba(15, 91, 69, 0.08);
+        color: var(--green);
+        font-size: 0.74rem;
+        font-weight: 800;
+      }
+
+      .payment-card h2 {
+        margin: 10px 0 8px;
+        font-size: 1.36rem;
+        line-height: 1.28;
+        color: var(--green);
+      }
+
+      .payment-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.68;
+      }
+
+      .summary-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .summary-box {
+        padding: 12px;
+        border-radius: 18px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+      }
+
+      .summary-box span {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .summary-box strong {
+        display: block;
+        color: var(--green);
+        font-size: 0.98rem;
+        line-height: 1.35;
+      }
+
+      .payment-section {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(85, 59, 37, 0.1);
+      }
+
+      .payment-section h3 {
+        margin: 0 0 12px;
+        font-size: 0.96rem;
+        color: var(--green);
+      }
+
+      .method-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .method-option {
+        position: relative;
+      }
+
+      .method-option input {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+      }
+
+      .method-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        min-height: 58px;
+        padding: 13px 14px;
+        border-radius: 18px;
+        border: 1.5px solid var(--line);
+        background: var(--panel-soft);
+        transition: 0.18s ease;
+      }
+
+      .method-card-dark {
+        background: rgba(15, 91, 69, 0.08);
+        color: var(--green);
+        border-color: rgba(15, 91, 69, 0.12);
+      }
+
+      .method-meta strong {
+        display: block;
+        font-size: 0.94rem;
+      }
+
+      .method-meta span {
+        display: block;
+        margin-top: 3px;
+        color: inherit;
+        opacity: 0.72;
+        font-size: 0.76rem;
+      }
+
+      .method-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 58px;
+        min-height: 32px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: rgba(217, 171, 85, 0.16);
+        color: var(--green);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .method-card-dark .method-badge {
+        background: rgba(217, 171, 85, 0.18);
+        color: var(--green);
+      }
+
+      .method-option input:checked + .method-card {
+        border-color: rgba(15, 91, 69, 0.3);
+        box-shadow: inset 0 0 0 1px rgba(15, 91, 69, 0.08);
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+        grid-column: 1 / -1;
+      }
+
+      .field-input {
+        width: 100%;
+        min-height: 48px;
+        padding: 14px 16px;
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+        background: #fff;
+        color: var(--text);
+        font: inherit;
+        outline: none;
+      }
+
+      .field-input:focus {
+        border-color: rgba(15, 91, 69, 0.3);
+        box-shadow: 0 0 0 3px rgba(15, 91, 69, 0.08);
+      }
+
+      .helper-box {
+        margin-top: 12px;
+        padding: 13px 14px;
+        border-radius: 16px;
+        background: rgba(15, 91, 69, 0.06);
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.65;
+      }
+
+      .cta-btn {
+        width: 100%;
+        min-height: 50px;
+        margin-top: 14px;
+        border: 0;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+        color: #fff;
+        font-size: 0.98rem;
+        font-weight: 900;
+      }
+
+      .result-box {
+        display: none;
+        margin-top: 12px;
+        padding: 13px 14px;
+        border-radius: 16px;
+        background: #eef8f1;
+        color: #0b5a3b;
+        font-size: 0.84rem;
+        line-height: 1.65;
+      }
+
+      .result-box.is-visible {
+        display: block;
+      }
+
+      .site-footer-nav {
+        margin-top: 18px;
+        padding: 20px 16px 16px;
+        border-radius: 24px;
+        background: rgba(255, 248, 239, 0.92);
+        border: 1px solid rgba(85, 59, 37, 0.1);
+        box-shadow: 0 16px 36px rgba(48, 25, 10, 0.08);
+      }
+
+      .site-footer-logo {
+        display: block;
+        width: 92px;
+        height: 92px;
+        margin: 0 auto 10px;
+        object-fit: contain;
+      }
+
+      .site-footer-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .site-footer-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(85, 59, 37, 0.12);
+        background: rgba(255, 250, 242, 0.95);
+        color: var(--green);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .site-footer-btn:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+      }
+
+      @media (max-width: 360px) {
+        .summary-panel,
+        .site-footer-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-glow page-glow-top"></div>
+    <div class="page-glow page-glow-bottom"></div>
+    <main class="page-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">
+            <img src="./慈善募捐网站logo设计.png" alt="AidSpring Foundation logo" />
+          </span>
+          <h1>AidSpring Foundation</h1>
+        </div>
+        <a class="topbar-link" id="backToForm" href="./payment.html">返回</a>
+      </header>
+
+      <section class="payment-card">
+        <span class="payment-kicker">Secure Checkout</span>
+        <h2 id="checkoutProjectName">正在读取支付项目</h2>
+        <p>请选择支付方式并确认本次善款支持。您的捐助信息将在本页进行最后核对。</p>
+
+        <div class="summary-panel">
+          <div class="summary-box">
+            <span>捐助金额</span>
+            <strong id="checkoutAmount">US$0</strong>
+          </div>
+          <div class="summary-box">
+            <span>捐助身份</span>
+            <strong id="donorIdentity">正在读取</strong>
+          </div>
+        </div>
+
+        <div class="payment-section">
+          <h3>选择支付方式</h3>
+          <form id="checkoutForm">
+            <div class="method-grid">
+              <label class="method-option">
+                <input type="radio" name="paymentMethod" value="Apple Pay" checked />
+                <span class="method-card method-card-dark">
+                  <span class="method-meta">
+                    <strong>Apple Pay</strong>
+                    <span>适用于 iPhone 与 Safari 快捷支付</span>
+                  </span>
+                  <span class="method-badge">Pay</span>
+                </span>
+              </label>
+
+              <label class="method-option">
+                <input type="radio" name="paymentMethod" value="银行卡" />
+                <span class="method-card">
+                  <span class="method-meta">
+                    <strong>银行卡</strong>
+                    <span>借记卡或常用本地银行卡支付</span>
+                  </span>
+                  <span class="method-badge">CARD</span>
+                </span>
+              </label>
+
+              <label class="method-option">
+                <input type="radio" name="paymentMethod" value="Visa" />
+                <span class="method-card">
+                  <span class="method-meta">
+                    <strong>Visa</strong>
+                    <span>国际 Visa 卡支付通道</span>
+                  </span>
+                  <span class="method-badge">VISA</span>
+                </span>
+              </label>
+
+              <label class="method-option">
+                <input type="radio" name="paymentMethod" value="Google Pay" />
+                <span class="method-card method-card-dark">
+                  <span class="method-meta">
+                    <strong>Google Pay</strong>
+                    <span>适用于 Android 设备快捷支付</span>
+                  </span>
+                  <span class="method-badge">G Pay</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="field-grid" id="cardFields">
+              <input class="field-input" id="cardHolder" type="text" placeholder="持卡人姓名" />
+              <input class="field-input" id="cardNumber" type="text" inputmode="numeric" placeholder="银行卡号 / Visa 卡号" />
+              <input class="field-input" id="cardExpiry" type="text" placeholder="有效期 MM/YY" />
+              <input class="field-input" id="cardCvc" type="text" inputmode="numeric" placeholder="安全码 CVV" />
+            </div>
+            <div class="helper-box" id="paymentHelper">
+              已选择 Apple Pay。确认后将进入设备支付验证流程。
+            </div>
+
+            <button class="cta-btn" id="payButton" type="submit">使用 Apple Pay 支付</button>
+            <div class="result-box" id="resultBox"></div>
+          </form>
+        </div>
+      </section>
+
+      <section class="site-footer-nav">
+        <img class="site-footer-logo" src="./慈善募捐网站logo设计.png" alt="AidSpring Foundation logo" />
+        <div class="site-footer-grid">
+          <a class="site-footer-btn" href="./index.html#patientDirectory">立即捐助</a>
+          <a class="site-footer-btn" href="./news.html">新闻媒体</a>
+          <a class="site-footer-btn" href="./about.html">关于我们</a>
+          <a class="site-footer-btn" href="./contact.html">联系我们</a>
+          <a class="site-footer-btn" href="./privacy.html">隐私条款</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get("slug") || "";
+      const projectName = params.get("project") || "AidSpring Foundation 募捐项目";
+      const amount = Number(params.get("amount")) || 0;
+      const donorName = params.get("name") || "";
+      const donorEmail = params.get("email") || "";
+      const donorPhone = params.get("phone") || "";
+      const donorComment = params.get("comment") || "";
+      const anonymous = params.get("anonymous") === "1";
+
+      const checkoutProjectName = document.getElementById("checkoutProjectName");
+      const checkoutAmount = document.getElementById("checkoutAmount");
+      const donorIdentity = document.getElementById("donorIdentity");
+      const backToForm = document.getElementById("backToForm");
+      const checkoutForm = document.getElementById("checkoutForm");
+      const cardFields = document.getElementById("cardFields");
+      const paymentHelper = document.getElementById("paymentHelper");
+      const payButton = document.getElementById("payButton");
+      const resultBox = document.getElementById("resultBox");
+
+      const formatAmount = (value) => `US$${Number(value).toLocaleString("en-US")}`;
+
+      function buildBackLink() {
+        const backParams = new URLSearchParams({
+          slug,
+          project: projectName,
+        });
+
+        if (amount) {
+          backParams.set("amount", String(amount));
+        }
+
+        return `./payment.html?${backParams.toString()}`;
+      }
+
+      function updateMethodState() {
+        const selectedInput = document.querySelector('input[name="paymentMethod"]:checked');
+        const method = selectedInput.value;
+        const usesCardFields = method === "银行卡" || method === "Visa";
+        const selectedOption = selectedInput.closest(".method-option");
+
+        if (usesCardFields && selectedOption) {
+          selectedOption.insertAdjacentElement("afterend", cardFields);
+          cardFields.style.display = "grid";
+        } else {
+          document.querySelector(".method-grid").appendChild(cardFields);
+          cardFields.style.display = "none";
+        }
+
+        if (method === "Apple Pay") {
+          paymentHelper.textContent = "已选择 Apple Pay。确认后将进入设备支付验证流程。";
+        } else if (method === "Google Pay") {
+          paymentHelper.textContent = "已选择 Google Pay。确认后将进入 Google Pay 授权验证流程。";
+        } else if (method === "Visa") {
+          paymentHelper.textContent = "已选择 Visa。请填写卡片信息并确认本次支付。";
+        } else {
+          paymentHelper.textContent = "已选择银行卡支付。请填写卡片信息并确认本次支付。";
+        }
+
+        payButton.textContent = `使用 ${method} 支付`;
+      }
+
+      checkoutProjectName.textContent = projectName;
+      checkoutAmount.textContent = amount ? formatAmount(amount) : "US$0";
+      donorIdentity.textContent = anonymous ? "匿名捐助" : donorName || "未命名捐助者";
+      backToForm.href = buildBackLink();
+
+      document
+        .querySelectorAll('input[name="paymentMethod"]')
+        .forEach((input) => input.addEventListener("change", updateMethodState));
+
+      updateMethodState();
+
+      checkoutForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const usesCardFields = method === "银行卡" || method === "Visa";
+
+        if (usesCardFields) {
+          const cardHolder = document.getElementById("cardHolder").value.trim();
+          const cardNumber = document.getElementById("cardNumber").value.trim();
+          const cardExpiry = document.getElementById("cardExpiry").value.trim();
+          const cardCvc = document.getElementById("cardCvc").value.trim();
+
+          if (!cardHolder || !cardNumber || !cardExpiry || !cardCvc) {
+            resultBox.classList.add("is-visible");
+            resultBox.textContent = "请先完整填写卡片信息，再继续支付。";
+            return;
+          }
+        }
+
+        resultBox.classList.add("is-visible");
+        resultBox.textContent = anonymous
+          ? `已为 ${projectName} 准备 ${formatAmount(amount)} 的${method}支付流程。当前页面为演示支付页，真实支付通道可在此位置接入。`
+          : `已为 ${donorName || donorEmail || "当前捐助者"} 准备 ${formatAmount(amount)} 的${method}支付流程。当前页面为演示支付页，真实支付通道可在此位置接入。`;
+      });
+    </script>
+  </body>
+</html>
